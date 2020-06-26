@@ -3,11 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>CounterButton</title>
+  <style>
+    [v-cloak]{
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
 <!-- Решение -->
+<div id="app" v-cloak>
+  <button @click="increaseCount">{{ count }}</button>
+</div>
 
-<script type="module" src="script.js"></script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
