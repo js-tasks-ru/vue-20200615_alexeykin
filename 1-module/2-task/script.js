@@ -30,7 +30,7 @@ const agendaItemTitles = {
 };
 
 /**
- * Словарь иконок для для всех типов элементов программы.
+ * Словарь иконок для всех типов элементов программы.
  * Соответствует имени иконок в директории /assets/icons
  */
 const agendaItemIcons = {
@@ -48,19 +48,52 @@ export const app = new Vue({
   el: '#app',
 
   data: {
-    //
+    meetupData: {},
   },
 
-  mounted() {
-    // Требуется получить данные митапа с API
+  async mounted() {
+    this.setMeetupInfo(await this.fetchData());
   },
 
   computed: {
-    //
+    meetupImage() {
+      return `${API_URL}/images/${this.meetupData.imageId}`;
+    },
+    localeDate() {
+      return new Date(this.meetupData.date).toLocaleString('ru', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+    },
+    agendaIcons() {
+      const iconsUrls = [];
+      this.meetupData.agenda.forEach(
+        (agenda) =>
+          (iconsUrls[agenda.id] = `/assets/icons/icon-${
+            agendaItemIcons[agenda.type]
+          }.svg`),
+      );
+      return iconsUrls;
+    },
+    agendaTitles() {
+      const iconsTitles = [];
+      this.meetupData.agenda.forEach(
+        (agenda) =>
+          (iconsTitles[agenda.id] =
+            agenda.title || agendaItemTitles[agenda.type]),
+      );
+      return iconsTitles;
+    },
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
+    async fetchData() {
+      const meetupInfo = await fetch(`${API_URL}/meetups/${MEETUP_ID}`);
+      return meetupInfo.json();
+    },
+    setMeetupInfo(info) {
+      this.meetupData = info;
+    },
   },
 });
