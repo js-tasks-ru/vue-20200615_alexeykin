@@ -1,5 +1,5 @@
 export const MeetupCover = {
-  template: `<div class="meetup-cover" :style="style">
+  template: `<div class="meetup-cover" :style="link ? style : {}">
         <h1 class="meetup-cover__title">{{ title }}</h1>
     </div>`,
 
@@ -11,7 +11,7 @@ export const MeetupCover = {
   computed: {
     style() {
       return {
-        '--bg-url': this.link ? `url(${this.link})` : '',
+        '--bg-url': `url(${this.link})`,
       };
     },
   },
