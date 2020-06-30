@@ -6,25 +6,6 @@ export function getDaysCounts(date) {
   return counts;
 }
 
-/* фильтрация митапов по переданному дню */
-export function filterMeetups(date, meetups) {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-  const filteredMeetups = meetups.filter((meetup) => {
-    const handledDate = new Date(meetup.date);
-    const meetupDateYears = handledDate.getFullYear();
-    const meetupDateMonths = handledDate.getMonth();
-    const meetupDateDay = handledDate.getDate();
-    return (
-      meetupDateYears === year &&
-      meetupDateMonths === month &&
-      meetupDateDay === day
-    );
-  });
-  return filteredMeetups;
-}
-
 export const MeetupsCalendar = {
   name: 'MeetupsCalendar',
 
@@ -72,24 +53,41 @@ export const MeetupsCalendar = {
         month: 'long',
       });
     },
+    /* Создаётся объект по принципу ключ - датаб значение - массив митапов на эту дату */
+    dateMeetups() {
+      const dateMeetupsObject = {};
+      this.meetups.forEach((meetup) => {
+        const fullMeetupDate = new Date(meetup.date);
+        const year = fullMeetupDate.getFullYear();
+        const month = fullMeetupDate.getMonth();
+        const day = fullMeetupDate.getDate();
+        if (!dateMeetupsObject[`${day}.${month + 1}.${year}`]) {
+          dateMeetupsObject[`${day}.${month + 1}.${year}`] = [meetup];
+        } else {
+          dateMeetupsObject[`${day}.${month + 1}.${year}`] = [
+            ...dateMeetupsObject[`${day}.${month + 1}.${year}`],
+            meetup,
+          ];
+        }
+      });
+      return dateMeetupsObject;
+    },
     /* список всех дней, которые выводятся на страницу */
     daysArray() {
       let arrayOfDays = [];
-      const years = this.date.getFullYear();
-      const months = this.date.getMonth();
+      const year = this.date.getFullYear();
+      const month = this.date.getMonth();
       /* день недели, на который выпадает первое число текущего месяца */
-      const firstWeekDay = new Date(years, months, 1).getDay();
+      const firstWeekDay = new Date(year, month, 1).getDay();
       /* количество дней в текущем месяце */
-      const currentMonthDaysCount = getDaysCounts(new Date(years, months));
+      const currentMonthDaysCount = getDaysCounts(new Date(year, month));
       /* день недели, на который выпадает последнее число текущего месяца */
-      const lastWeekDay = new Date(
-        years,
-        months,
-        currentMonthDaysCount,
-      ).getDay();
+      const lastWeekDay = new Date(year, month, currentMonthDaysCount).getDay();
       for (let i = 1; i <= currentMonthDaysCount; i++) {
-        const fullDate = new Date(years, months, i);
-        const filteredMeetups = filterMeetups(fullDate, this.meetups);
+        const fullDate = new Date(year, month, i);
+        const day = fullDate.getDate();
+        const filteredMeetups =
+          this.dateMeetups[`${day}.${month + 1}.${year}`] || [];
         arrayOfDays.push({
           fullDate,
           day: fullDate.getDate(),
@@ -100,9 +98,7 @@ export const MeetupsCalendar = {
       /* если первый день месяца не приходится на понедельник */
       if (firstWeekDay !== 1) {
         /* количество дней в предыдущем месяце */
-        const previousMonthDaysCount = getDaysCounts(
-          new Date(years, months - 1),
-        );
+        const previousMonthDaysCount = getDaysCounts(new Date(year, month - 1));
         const arrayOfPreviousMonthDays = [];
         if (firstWeekDay === 0) {
           for (
@@ -110,8 +106,10 @@ export const MeetupsCalendar = {
             i <= previousMonthDaysCount;
             i++
           ) {
-            const fullDate = new Date(years, months - 1, i);
-            const filteredMeetups = filterMeetups(fullDate, this.meetups);
+            const fullDate = new Date(year, month - 1, i);
+            const day = fullDate.getDate();
+            const filteredMeetups =
+              this.dateMeetups[`${day}.${month + 1}.${year}`] || [];
             arrayOfPreviousMonthDays.push({
               fullDate,
               day: fullDate.getDate(),
@@ -125,8 +123,10 @@ export const MeetupsCalendar = {
             i <= previousMonthDaysCount;
             i++
           ) {
-            const fullDate = new Date(years, months - 1, i);
-            const filteredMeetups = filterMeetups(fullDate, this.meetups);
+            const fullDate = new Date(year, month - 1, i);
+            const day = fullDate.getDate();
+            const filteredMeetups =
+              this.dateMeetups[`${day}.${month + 1}.${year}`] || [];
             arrayOfPreviousMonthDays.push({
               fullDate,
               day: fullDate.getDate(),
@@ -141,8 +141,10 @@ export const MeetupsCalendar = {
       if (lastWeekDay !== 0) {
         const arrayOfNextMonthDays = [];
         for (let i = 1; i <= 7 - lastWeekDay; i++) {
-          const fullDate = new Date(years, months + 1, i);
-          const filteredMeetups = filterMeetups(fullDate, this.meetups);
+          const fullDate = new Date(year, month + 1, i);
+          const day = fullDate.getDate();
+          const filteredMeetups =
+            this.dateMeetups[`${day}.${month + 1}.${year}`] || [];
           arrayOfNextMonthDays.push({
             fullDate,
             day: fullDate.getDate(),
