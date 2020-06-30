@@ -6,25 +6,6 @@ export function getDaysCounts(date) {
   return counts;
 }
 
-/* фильтрация митапов по переданному дню */
-export function filterMeetups(date, meetups) {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-  const filteredMeetups = meetups.filter((meetup) => {
-    const handledDate = new Date(meetup.date);
-    const meetupDateYears = handledDate.getFullYear();
-    const meetupDateMonths = handledDate.getMonth();
-    const meetupDateDay = handledDate.getDate();
-    return (
-      meetupDateYears === year &&
-      meetupDateMonths === month &&
-      meetupDateDay === day
-    );
-  });
-  return filteredMeetups;
-}
-
 export const MeetupsCalendar = {
   name: 'MeetupsCalendar',
 
@@ -80,8 +61,14 @@ export const MeetupsCalendar = {
         const year = fullMeetupDate.getFullYear();
         const month = fullMeetupDate.getMonth();
         const day = fullMeetupDate.getDate();
-        const filteredMeetups = filterMeetups(fullMeetupDate, this.meetups);
-        dateMeetupsObject[`${day}.${month + 1}.${year}`] = filteredMeetups;
+        if (!dateMeetupsObject[`${day}.${month + 1}.${year}`]) {
+          dateMeetupsObject[`${day}.${month + 1}.${year}`] = [meetup];
+        } else {
+          dateMeetupsObject[`${day}.${month + 1}.${year}`] = [
+            ...dateMeetupsObject[`${day}.${month + 1}.${year}`],
+            meetup,
+          ];
+        }
       });
       return dateMeetupsObject;
     },
