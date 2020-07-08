@@ -10,10 +10,16 @@
       ]"
     >
       <app-icon
-        v-if="objectOfSelectedValue.icon"
+        v-if="objectOfSelectedValue && objectOfSelectedValue.icon"
         :icon="objectOfSelectedValue.icon"
       />
-      {{ title }} - {{ objectOfSelectedValue.text }}
+      {{
+        `${title}${
+          objectOfSelectedValue && objectOfSelectedValue.text
+            ? ` - ${objectOfSelectedValue.text}`
+            : ''
+        }`
+      }}
     </button>
 
     <div :class="['dropdown__menu', dropdownIsOpen ? 'show' : '']">
@@ -53,7 +59,7 @@ export default {
       const selectedObject = this.options.find(
         (option) => option.value === this.value,
       );
-      return selectedObject || this.options[0];
+      return selectedObject;
     },
   },
 
