@@ -3,8 +3,11 @@
     <button
       type="button"
       @click="toggleDropdown"
-      class="button dropdown__toggle"
-      :class="[withIcon ? 'dropdown__toggle_icon' : '']"
+      :class="[
+        'button',
+        'dropdown__toggle',
+        withIcon ? 'dropdown__toggle_icon' : '',
+      ]"
     >
       <app-icon
         v-if="objectOfSelectedValue && objectOfSelectedValue.icon"
@@ -23,8 +26,7 @@
       <button
         v-for="option in options"
         :key="option.value"
-        class="dropdown__item"
-        :class="[option.icon ? 'dropdown__item_icon' : '']"
+        :class="['dropdown__item', option.icon ? 'dropdown__item_icon' : '']"
         @click="setValue(option.value)"
         type="button"
       >
