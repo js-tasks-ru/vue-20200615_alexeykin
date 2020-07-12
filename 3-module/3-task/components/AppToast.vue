@@ -5,13 +5,13 @@
       :key="message.key"
       :class="{
         toast: message.type,
-        toast_success: message.type === 'success',
-        toast_error: message.type === 'error',
+        toast_success: message.type === 'SUCCESS',
+        toast_error: message.type === 'ERROR',
       }"
     >
       <app-icon
         v-if="message.type"
-        :icon="message.type === 'success' ? 'check-circle' : 'alert-circle'"
+        :icon="message.type === 'SUCCESS' ? 'check-circle' : 'alert-circle'"
       />
       <span v-if="message.type">{{ message.text }}</span>
     </div>
@@ -42,11 +42,10 @@ export default {
 
   methods: {
     error(message) {
-      const type = message.split(' ')[0];
       const newMessageList = [
         ...this.defaultList,
         {
-          type: type.toLowerCase(),
+          type: 'ERROR',
           text: message,
           key: this.defaultList.length,
         },
@@ -56,11 +55,10 @@ export default {
     },
 
     success(message) {
-      const type = message.split(' ')[0];
       const newMessageList = [
         ...this.defaultList,
         {
-          type: type.toLowerCase(),
+          type: 'SUCCESS',
           text: message,
           key: this.defaultList.length,
         },
