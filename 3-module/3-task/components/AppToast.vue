@@ -1,12 +1,19 @@
 <template>
   <div class="toasts">
-    <div class="toast toast_success">
-      <app-icon icon="check-circle" />
-      <span>Success</span>
-    </div>
-    <div class="toast toast_error">
-      <app-icon icon="alert-circle" />
-      <span>Error</span>
+    <div
+      v-for="message in messageList"
+      :key="message.key"
+      :class="{
+        toast: message.type,
+        toast_success: message.type === 'SUCCESS',
+        toast_error: message.type === 'ERROR',
+      }"
+    >
+      <app-icon
+        v-if="message.type"
+        :icon="message.type === 'SUCCESS' ? 'check-circle' : 'alert-circle'"
+      />
+      <span v-if="message.type">{{ message.text }}</span>
     </div>
   </div>
 </template>
@@ -21,10 +28,56 @@ export default {
 
   components: { AppIcon },
 
-  methods: {
-    error(message) {},
+  data() {
+    return {
+      defaultList: [],
+    };
+  },
 
-    success(message) {},
+  computed: {
+    messageList() {
+      return this.defaultList;
+    },
+  },
+
+  methods: {
+    error(message) {
+      const newMessageList = [
+        ...this.defaultList,
+        {
+          type: 'ERROR',
+          text: message,
+          key: this.defaultList.length,
+        },
+      ];
+      this.defaultList = newMessageList;
+      this.hideMessage(newMessageList.length - 1);
+    },
+
+    success(message) {
+      const newMessageList = [
+        ...this.defaultList,
+        {
+          type: 'SUCCESS',
+          text: message,
+          key: this.defaultList.length,
+        },
+      ];
+      this.defaultList = newMessageList;
+      this.hideMessage(newMessageList.length - 1);
+    },
+
+    hideMessage(index) {
+      const self = this;
+      setTimeout(function () {
+        const newDefaultList = [...self.defaultList];
+        newDefaultList[index] = {
+          ...newDefaultList[index],
+          type: '',
+        };
+        self.defaultList = newDefaultList;
+      }, DELAY);
+    },
   },
 };
 </script>
