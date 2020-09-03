@@ -80,10 +80,10 @@ export default {
         delete query.view;
       }
       this.$router
-        .push({
-          path: '/',
-          query,
-        })
+        .replace({          // Я использовал replace, а не push по той причине, что
+          path: '/',        // мы фактически, меняя параметры, остаёмся на одной и той же странице, влияя только на список митапов.
+          query,            // Нет логики в применении push в данном случае. К тому же, если бы фильтров было гораздо больше,
+        })                  // то мы бы могли 'забить' стек адресов, если бы использовали push и нам было бы затруднительно вернуться на страницу, предшествующую настройке.
         .catch(() => {});
     },
     handleDateChanges() {
@@ -94,7 +94,7 @@ export default {
         delete query.date;
       }
       this.$router
-        .push({
+        .replace({
           path: '/',
           query,
         })
@@ -108,7 +108,7 @@ export default {
         delete query.participation;
       }
       this.$router
-        .push({
+        .replace({
           path: '/',
           query,
         })
@@ -122,7 +122,7 @@ export default {
         delete query.search;
       }
       this.$router
-        .push({
+        .replace({
           path: '/',
           query,
         })
